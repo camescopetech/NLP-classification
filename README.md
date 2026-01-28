@@ -17,6 +17,15 @@ Ce type de problématique est central dans de nombreux travaux actuels en intell
   
 Le code du projet (`main.ipynb`) peut simplement être téléchargé et ouvert dans un éditeur de code (*par exemple VSCode*). Le notebook contient l'ensemble du code commenté ainsi que les résultats obtenus.
 
+
+Pour installer le repo dans un éditeur de code :
+
+    https://github.com/camescopetech/NLP-classification.git
+
+    cd /NLP-classification
+
+Ouvrir le fichier main.ipynb pour voir le code et les résultats. 
+
 ## **3. Dataset choisi**
 
   
