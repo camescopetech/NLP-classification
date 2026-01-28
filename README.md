@@ -12,12 +12,16 @@ Ce projet s’inscrit dans le cadre d’un travail académique en **Traitement A
 
 Ce type de problématique est central dans de nombreux travaux actuels en intelligence artificielle pour la santé, notamment dans les domaines de l’aide à la décision médicale, du triage automatisé et de la médecine préventive. Le projet ne vise en aucun cas à établir un diagnostic médical, mais à étudier la capacité des modèles de langage à comprendre et structurer des informations cliniques exprimées en langage naturel.
 
+## **2. Installation et exécution**
 
-## **2. Dataset choisi**
+  
+Le code du projet (`main.ipynb`) peut simplement être téléchargé et ouvert dans un éditeur de code (*par exemple VSCode*). Le notebook contient l'ensemble du code commenté ainsi que les résultats obtenus.
+
+## **3. Dataset choisi**
 
   
 
-### **2.1 Source du dataset**
+### **3.1 Source du dataset**
 
   
 
@@ -31,7 +35,7 @@ Il s’agit d’un dataset public.
 
 ----------
 
-### **2.2 Description du dataset**
+### **3.2 Description du dataset**
 
   
 
@@ -67,7 +71,7 @@ Le dataset couvre un ensemble varié de pathologies, ce qui en fait un bon suppo
 
 ----------
 
-### **2.3 Intérêt du dataset pour ce projet**
+### **3.3 Intérêt du dataset pour ce projet**
 
   
 
@@ -83,7 +87,7 @@ Ce dataset est particulièrement adapté au projet pour plusieurs raisons :
     
 
 
-## **3. Problématique abordée**
+## **4. Problématique abordée**
 
   
 
@@ -113,11 +117,11 @@ Cette problématique soulève plusieurs défis :
 -   Le modèle doit être capable de comprendre le sens médical du texte, et pas uniquement des mots-clés isolés
     
 
-## **4. Solution proposée**
+## **5. Solution proposée**
 
   
 
-### **4.1 Approche générale**
+### **5.1 Approche générale**
 
   
 
@@ -144,7 +148,7 @@ L’approche suit les étapes suivantes :
 
 ----------
 
-### **4.2 Définition de la tâche (Task Definition)**
+### **5.2 Définition de la tâche (Task Definition)**
 
   
 
@@ -160,7 +164,7 @@ Cette définition claire permet au modèle de comprendre qu’il s’agit d’un
 
 ----------
 
-### **4.3 Prompt engineering et few-shot learning**
+### **5.3 Prompt engineering et few-shot learning**
 
   
 
@@ -181,7 +185,7 @@ Le **few-shot learning** consiste à fournir au modèle quelques exemples repré
 
 ----------
 
-### **4.4 Chain-of-Thought**
+### **5.4 Chain-of-Thought**
 
   
 
@@ -200,7 +204,7 @@ Cette approche permet :
 
 ----------
 
-### **4.5 Librairies et outils utilisés**
+### **5.5 Librairies et outils utilisés**
 
   
 
@@ -219,11 +223,11 @@ Les principaux outils et librairies utilisés sont :
 -   Google Colab pour l’expérimentation
     
 
-## **5. Résultats et évaluation**
+## **6. Résultats et évaluation**
 
   
 
-### **5.1 Protocole expérimental**
+### **6.1 Protocole expérimental**
 
   
 
@@ -246,7 +250,7 @@ L’objectif n’est pas uniquement d’obtenir le meilleur score, mais de **com
 
 ----------
 
-### **5.2 Métriques d’évaluation**
+### **6.2 Métriques d’évaluation**
 
   
 
@@ -267,7 +271,7 @@ Le choix des métriques macro est justifié par la volonté de **ne pas favorise
 
 ----------
 
-### **5.3 Configurations comparées**
+### **6.3 Configurations comparées**
 
   
 
@@ -292,23 +296,12 @@ Ces configurations permettent d’isoler l’effet de chaque composant (exemples
 
 ----------
 
-### **5.4 Résultats quantitatifs (test)**
+### **6.4 Résultats quantitatifs (test)**
 
   
 
 L’évaluation finale est réalisée sur le **jeu de test (n = 150)**, dans un cadre **multi-classe** avec **15 maladies**. Le tableau ci-dessous reprend les métriques calculées dans le notebook pour chaque variante, triées par performance (F1 macro).
 
-**Variante**
-
-**Fails**
-
-**Accuracy**
-
-**Precision (macro)**
-
-**Recall (macro)**
-
-**F1 (macro)**
 
 | Variante | Fails | Accuracy | Precision (macro) | Recall (macro) | F1-score (macro) |
 |--------|------:|---------:|------------------:|---------------:|-----------------:|
@@ -324,240 +317,53 @@ Remarque : la colonne **Fails** correspond au nombre de sorties du modèle qui n
 
 ----------
 
-### **5.5 Analyse comparative des résultats**
+### **6.5 Analyse comparative des résultats**
+
 
   
 
-#### **Impact du few-shot learning**
+Les résultats obtenus mettent en évidence des différences très marquées entre les stratégies de prompting évaluées, tant en termes de performance globale que de robustesse. L’analyse des métriques macro (précision, rappel et F1-score) permet d’aller au-delà de la simple accuracy et d’évaluer plus finement la capacité des modèles à traiter équitablement l’ensemble des classes de maladies, dans un contexte de classification multi-classes déséquilibrée.
 
   
 
-L’ajout d’exemples annotés dans le prompt permet au modèle :
-
--   De mieux comprendre la correspondance entre symptômes et maladies
-    
--   D’identifier des motifs récurrents dans les descriptions cliniques
-    
--   De réduire les erreurs liées à des interprétations trop générales
-    
+La meilleure configuration observée est **P2 — Liste + few-shot dynamique (TF-IDF)**, qui atteint une accuracy de 0.567 et surtout un F1-macro de 0.550, soit le score le plus élevé parmi toutes les variantes testées. Cette performance s’explique par la combinaison d’un espace de sortie explicitement contraint (liste des maladies possibles) et d’une sélection dynamique d’exemples pertinents, basée sur la similarité TF-IDF entre l’entrée courante et les cas du jeu d’entraînement. Cette stratégie permet au modèle de s’ancrer dans des exemples proches sur le plan sémantique, réduisant les confusions inter-classes et améliorant simultanément la précision macro (0.604) et le rappel macro (0.567). Le fait que cette configuration ne produise aucun échec de parsing renforce également sa robustesse opérationnelle.
 
   
 
-Cette amélioration est particulièrement visible pour les maladies partageant des symptômes communs (par exemple fatigue, douleurs, troubles digestifs).
-
-
-#### **Apport du Chain-of-Thought**
+La variante **P3.3 — Chain-of-Thought + few-shot dynamique (TF-IDF)** obtient des performances légèrement inférieures, avec un F1-macro de 0.524 et une accuracy de 0.560. Bien que l’ajout du raisonnement explicite puisse théoriquement aider le modèle à structurer sa décision, les résultats montrent ici un léger recul par rapport à P2 sur l’ensemble des métriques. En particulier, la baisse de la précision macro suggère que le raisonnement étape par étape peut introduire une forme de sur-interprétation, conduisant parfois le modèle à justifier une prédiction incorrecte de manière cohérente mais erronée. Dans le cadre d’une tâche de classification fermée, où la sortie doit appartenir à un ensemble limité et bien défini de maladies, un prompt plus direct, fortement guidé par des exemples pertinents, semble donc plus efficace qu’un raisonnement explicité.
 
   
 
-L’intégration d’un raisonnement étape par étape apporte plusieurs bénéfices :
-
--   Le modèle est incité à considérer l’ensemble des symptômes avant de décider
-    
--   Les prédictions deviennent plus cohérentes et moins impulsives
-    
--   Les erreurs dues à la présence d’un symptôme dominant sont réduites
-    
+Les configurations reposant sur un **few-shot statique** ou sur des **contextes partiels** montrent une dégradation nette des performances. La variante **P3.2 — CoT + few-shot statique** atteint un F1-macro de 0.370, ce qui reste supérieur aux approches sans exemples mais très en-deçà des stratégies dynamiques. Cette différence souligne l’importance cruciale de la pertinence des exemples fournis : des cas fixes, même bien choisis a priori, ne suffisent pas à couvrir la diversité sémantique des symptômes décrits dans les données d’entrée. Le modèle bénéficie davantage d’exemples contextuellement proches que d’un raisonnement complexe appliqué à des cas génériques.
 
   
 
-Dans les cas ambigus, le Chain-of-Thought permet au modèle de pondérer plusieurs indices cliniques, ce qui explique l’amélioration du F1-score macro.
-
-----------
-
-### **5.6 Analyse qualitative des erreurs**
+Lorsque le contexte est réduit à une simple **liste de maladies** (P1) ou à un **prompt baseline sans guidage** (P0), les performances deviennent très proches, avec des F1-macro respectifs de 0.197 et 0.194. Cette quasi-équivalence indique que la contrainte sur l’espace de sortie, prise isolément, n’apporte qu’un gain marginal. Le modèle peine à discriminer correctement les classes sans ancrage explicite dans des exemples concrets, ce qui se traduit par une faible précision macro et un rappel limité.
 
   
 
-Une analyse qualitative des prédictions incorrectes met en évidence plusieurs types d’erreurs :
-
--   **Confusion entre maladies aux symptômes proches**, par exemple entre troubles digestifs différents
-    
--   **Descriptions de symptômes trop vagues**, ne permettant pas une discrimination claire
-    
--   **Absence de symptômes clés** dans certaines entrées du dataset
-    
+La configuration **P3.1 — Chain-of-Thought + liste de maladies** améliore légèrement ces résultats (F1-macro de 0.208), mais le gain reste modeste. Le raisonnement guidé, en l’absence d’exemples, ne permet donc pas au modèle de construire des frontières de décision suffisamment discriminantes entre les classes médicales.
 
   
 
-Ces erreurs soulignent les limites inhérentes aux données textuelles et justifient l’utilisation de techniques de raisonnement explicite.
-
-----------
-
-### **5.7 Exemple détaillé de prédiction**
+Enfin, la variante **P3.0 — Chain-of-Thought seul** met en évidence un problème majeur de robustesse. Avec 134 échecs de parsing, une accuracy de 0.087 et un F1-macro de 0.036, cette configuration est largement inexploitable en pratique. Ces résultats montrent que, sans contrainte explicite sur le format de sortie ni ancrage par des exemples, le modèle produit fréquemment des réponses non conformes, rendant l’extraction automatique de la prédiction impossible. L’effondrement des métriques est ici davantage lié à un échec d’interface entre le prompt et le post-traitement qu’à une incapacité purement sémantique du modèle.
 
   
 
-Entrée (symptômes) :
+Dans l’ensemble, ces résultats montrent que **le facteur déterminant de la performance n’est ni la complexité du raisonnement demandé ni la simple contrainte sur l’espace de sortie, mais la pertinence contextuelle des exemples fournis**. Le few-shot dynamique basé sur TF-IDF apparaît comme la stratégie la plus efficace et la plus stable, tandis que le Chain-of-Thought, bien que conceptuellement intéressant, doit être utilisé avec précaution dans les tâches de classification fermée, où il peut introduire du bruit plutôt que du signal.
 
-  
+## **7. Discussion critique et perspectives**
 
-    Frequent urination, excessive thirst, unexplained weight loss, fatigue
+Les résultats obtenus montrent clairement que les performances des modèles dépendent davantage de la structuration du contexte que de la complexité du raisonnement demandé. En particulier, le few-shot dynamique basé sur TF-IDF améliore fortement les métriques macro, mais ce gain doit être interprété avec prudence. Il reflète en grande partie une mise en correspondance efficace entre l’entrée et des exemples proches, plutôt qu’une réelle capacité de généralisation du modèle. Le système raisonne principalement par analogie contextuelle, ce qui limite la portée des conclusions que l’on peut tirer sur ses capacités intrinsèques de compréhension médicale.
 
-  
+Le Chain-of-Thought, souvent présenté comme un levier d’amélioration du raisonnement, ne montre ici aucun bénéfice systématique. Lorsqu’il est correctement encadré, il conduit à des performances légèrement inférieures à un prompt direct enrichi d’exemples pertinents ; lorsqu’il est utilisé sans contraintes fortes, il entraîne une instabilité importante des sorties et des échecs de parsing. Cela met en évidence une tension entre explicabilité apparente et robustesse, particulièrement problématique dans un cadre de classification automatisée où la fiabilité du format de sortie est essentielle.
 
-Raisonnement (Chain-of-Thought) :
+D’un point de vue méthodologique, l’évaluation reste limitée par l’absence d’analyse fine des erreurs et des confusions entre maladies proches. Les métriques macro offrent une vision globale équilibrée, mais elles ne permettent pas de distinguer les erreurs cliniquement bénignes des erreurs potentiellement critiques. Par ailleurs, l’approche étant strictement in-context, les performances observées sont très sensibles au choix des exemples, à leur formulation et à la structure du prompt, ce qui pose la question de la stabilité des résultats hors du cadre expérimental.
 
--   Présence de symptômes métaboliques
-    
--   Association fréquente avec un dérèglement glycémique
-    
--   Absence de symptômes respiratoires ou infectieux
-    
+Ces observations ouvrent plusieurs perspectives. L’utilisation de représentations sémantiques plus riches que TF-IDF pour la sélection d’exemples pourrait améliorer la robustesse et la généralisation. Des sorties multi-label ou hiérarchiques permettraient également de mieux refléter la réalité clinique des recouvrements symptomatiques. Enfin, une évaluation qualitative systématique, couplée à des tests de robustesse hors distribution, apparaît indispensable pour mieux caractériser les limites réelles de ce type d’approches.
 
-  
+## **Conclusion**
 
-Sortie prédite :
+Cette étude montre que les performances des grands modèles de langage en classification médicale dépendent avant tout de la structuration du contexte fourni au modèle. Les meilleurs résultats sont obtenus lorsque l’espace de sortie est explicitement contraint et que les exemples sont sélectionnés de manière dynamique par similarité sémantique, ce qui permet au modèle de raisonner efficacement par analogie. À l’inverse, l’ajout d’un raisonnement explicite de type Chain-of-Thought ne conduit pas à une amélioration systématique des performances et peut même nuire à la robustesse lorsque le format de sortie n’est pas strictement contrôlé.
 
-  
-
-    Diabetes
-
-  
-
-Cet exemple illustre comment le raisonnement guidé permet d’aboutir à une prédiction plus fiable.
-
-
-## **6. Discussion des résultats**
-
-  
-
-### **6.1 Synthèse des tendances observées**
-
-  
-
-Les résultats montrent une tendance très nette : la qualité de la classification dépend fortement de la quantité de structure imposée au modèle (instruction explicite, liste de classes, exemples, puis raisonnement).
-
--   Les variantes les plus performantes sont **P2** (few-shot dynamique) et **P3.3** (CoT + few-shot dynamique).
-    
--   Les variantes sans exemples (P0, P1) restent proches d’un comportement de base, avec une précision macro faible.
-    
--   La variante **P3.0 (CoT seul)** obtient des performances très basses et présente un nombre important de sorties non exploitables (fails).
-    
-
-  
-
-Cette hiérarchie est cohérente avec l’hypothèse initiale du projet : sur une tâche de classification médicale, l’accès à des exemples pertinents et une structure de réponse contrôlée sont déterminants.
-
-----------
-
-### **6.2 Pourquoi le few-shot dynamique (TF-IDF) fonctionne mieux**
-
-  
-
-La variante **few-shot dynamique** sélectionne, pour chaque exemple de test, des exemples d’entraînement jugés similaires. Dans ce notebook, cette similarité est estimée via une approche de type **TF-IDF**, ce qui présente plusieurs avantages :
-
-1.  **Réduction du décalage sémantique entre exemples et entrée**
-    
-    Le modèle reçoit des exemples proches lexicalement (et souvent thématiquement) de l’entrée, ce qui facilite l’analogie.
-    
-2.  **Couverture plus pertinente des cas difficiles**
-    
-    Lorsque les symptômes sont ambigus (symptômes partagés par plusieurs maladies), les exemples voisins aident le modèle à discriminer.
-    
-3.  **Meilleure utilisation des tokens disponibles**
-    
-    Plutôt que d’intégrer des exemples fixes potentiellement hors-sujet, la sélection dynamique alloue le contexte à des exemples informatifs pour l’entrée courante.
-    
-
-Ces éléments expliquent que **P2** obtienne le meilleur compromis global (meilleure précision macro et meilleur F1 macro).
-
-----------
-
-### **6.3 CoT : gain réel, mais conditionnel**
-
-  
-
-L’ajout du Chain-of-Thought (CoT) n’améliore pas automatiquement les scores. Dans les résultats, **P3.3** est performant, mais reste légèrement derrière **P2**.
-
-  
-
-Une interprétation cohérente est la suivante :
-
--   Le CoT peut améliorer la robustesse lorsqu’il est couplé à des exemples pertinents (cas de P3.3).
-    
--   En revanche, le CoT augmente aussi la liberté de génération du modèle. Si la sortie attendue doit respecter un format strict, cela peut augmenter les erreurs de format, les réponses trop longues ou les réponses non directement classifiables.
-    
-
-  
-
-Dans ce projet, le meilleur usage du CoT est donc **guidé et contraint** : CoT + liste de classes + exemples pertinents.
-
-----------
-
-### **6.4 Interprétation du cas P3.0 (CoT seul) et des fails**
-
-  
-
-La variante **P3.0** présente :
-
--   Une accuracy très faible
-    
--   Un F1 macro très faible
-    
--   Et surtout un nombre élevé de **fails** (sorties non parseables / non exploitables)
-    
-
-  
-
-Cela suggère que, lorsqu’on demande au modèle de raisonner sans fournir :
-
--   une liste de classes,
-    
--   des exemples,
-    
--   et un format de réponse strict,
-    
-
-  
-
-le modèle tend à produire des réponses plus libres (explications, hypothèses, plusieurs maladies possibles). Ces sorties deviennent difficiles à convertir de manière fiable en un label unique, ce qui pénalise fortement l’évaluation. Ce résultat illustre une limite importante des approches LLM en classification : **la performance dépend autant de la qualité du raisonnement que de la capacité à produire une sortie structurée**.
-
-----------
-
-### **6.5 Limites et implications**
-
-  
-
-Plusieurs limites doivent être prises en compte dans l’interprétation des résultats :
-
--   **Chevauchement symptomatique** : certaines maladies partagent des symptômes généraux (fatigue, fièvre, douleur), ce qui limite la séparabilité.
-    
--   **Biais de formulation** : la sélection TF-IDF favorise la similarité lexicale ; une similarité sémantique plus profonde pourrait nécessiter des embeddings.
-    
--   **Évaluation sur un dataset contrôlé** : les performances ne se généralisent pas directement à des descriptions réelles de patients (variabilité, fautes, contexte médical, comorbidités).
-    
-
-  
-
-Malgré ces limites, les résultats confirment un point central : pour une classification médicale, les stratégies de prompt engineering apportent des gains significatifs, surtout lorsque l’on contrôle le contexte (exemples) et le format de sortie.
-
-
-## **7. Installation et exécution**
-
-  
-Le code du projet (`main.ipynb`) peut simplement être téléchargé et ouvert dans un éditeur de code (*par exemple VSCode*). Le notebook contient l'ensemble du code commenté ainsi que les résultats obtenus.
-
-## **8. Limites et perspectives**
-
- 
-
-Ce travail présente plusieurs limites :
-
--   Le modèle n’est pas entraîné spécifiquement sur des données médicales réelles
-    
--   Les descriptions de symptômes restent synthétiques
-    
--   L’approche ne remplace pas un modèle entraîné par fine-tuning
-    
-
-  
-
-Des pistes d’amélioration incluent :
-
--   Comparaison avec des approches classiques (TF-IDF + SVM, Logistic Regression)
-    
--   Fine-tuning d’un modèle de type BERT
-    
--   Extension vers une classification multi-label
-    
+Ces résultats soulignent que les gains observés relèvent davantage d’une ingénierie fine du prompt que d’une véritable capacité de généralisation du modèle, invitant à une interprétation prudente dans des contextes sensibles comme la santé. Ce travail met ainsi en évidence le potentiel du prompt engineering comme levier opérationnel, tout en rappelant la nécessité de contrôles rigoureux, d’analyses qualitatives et d’évaluations complémentaires pour envisager une utilisation fiable et scientifiquement interprétable des LLM en classification médicale.
